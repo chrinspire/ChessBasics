@@ -108,7 +108,7 @@ public class ChessBasics {
 
     public static boolean isCheckmateEvalFor(int eval, boolean color) {
         return isWhite(color) ?  eval < WHITE_IS_CHECKMATE + CHECK_IN_N_DELTA*20
-                :  eval > BLACK_IS_CHECKMATE - CHECK_IN_N_DELTA*20;
+                              :  eval > BLACK_IS_CHECKMATE - CHECK_IN_N_DELTA*20;
     }
 
     public static int evalForColor(int eval, boolean color) {
@@ -375,7 +375,7 @@ public class ChessBasics {
     public static String pieceColorAndName(int pceType) {
         return colorName(colorOfPieceType(pceType))
                 + (isQueen(pceType) ? chessBasicRes.getString("langPostfix.femaleAttr")
-                : chessBasicRes.getString("langPostfix.maleAttr"))
+                                    : chessBasicRes.getString("langPostfix.maleAttr"))
                 + " "
                 + pieceNameForType(pceType);
     }
@@ -464,7 +464,7 @@ public class ChessBasics {
     public static boolean isRookDir(final int from, final int to) {
         return from != to
                 && ( fileOf(from) == fileOf(to)
-                || rankOf(from) == rankOf(to) );
+                     || rankOf(from) == rankOf(to) );
     }
 
     public static boolean isCorrectSlidingPieceDirFromTo(final int pceType, final int from, final int to) {
@@ -787,7 +787,7 @@ public class ChessBasics {
         // actually the color parameter and if are not necessary if this is checked for a pawn move, as the pawns
         // never reach their own first rank anyway... but to be generic/complete for other use cases
         return isWhite(color) ? isLastRank( pos)
-                : isFirstRank(pos);
+                              : isFirstRank(pos);
     }
 
     public static int promotionDistanceForColor(int pos, boolean color) {
@@ -995,33 +995,33 @@ public class ChessBasics {
      */
     public static boolean isBetterThenFor(int eval1, int eval2, boolean color) {
         return isWhite(color) ? eval1 > eval2
-                : eval1 < eval2;
+                              : eval1 < eval2;
     }
 
     public static int maxFor(int eval1, int eval2, boolean color) {
         return isWhite(color) ? max(eval1,eval2)
-                : min(eval1,eval2);
+                              : min(eval1,eval2);
     }
 
     public static int minFor(int eval1, int eval2, boolean color) {
         return isWhite(color) ? min(eval1,eval2)
-                : max(eval1,eval2);
+                              : max(eval1,eval2);
     }
 
     static boolean formRightTriangle(int fromPos, int toPos1, int toPos2) {
         return (fileOf(toPos1) == fileOf(toPos2)
-                && fileOf(fromPos) != fileOf(toPos1))
+                    && fileOf(fromPos) != fileOf(toPos1))
                 || (rankOf(toPos1) == rankOf(toPos2)
-                && rankOf(fromPos) != rankOf(toPos1))
+                    && rankOf(fromPos) != rankOf(toPos1))
                 || (isRookDir(fromPos, toPos1)
-                && isRookDir(fromPos, toPos2)
-                && isBishopDir(toPos1, toPos2))
+                    && isRookDir(fromPos, toPos2)
+                    && isBishopDir(toPos1, toPos2))
                 || (isRookDir(fromPos, toPos1)
-                && isBishopDir(fromPos, toPos2)
-                && isBishopDir(toPos1, toPos2))
+                    && isBishopDir(fromPos, toPos2)
+                    && isBishopDir(toPos1, toPos2))
                 || (isRookDir(fromPos, toPos2)
-                && isBishopDir(fromPos, toPos1)
-                && isBishopDir(toPos1, toPos2))
+                    && isBishopDir(fromPos, toPos1)
+                    && isBishopDir(toPos1, toPos2))
                 ;
     }
 }

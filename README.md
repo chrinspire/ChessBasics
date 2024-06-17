@@ -63,8 +63,8 @@ like `FENPOS_STARTPOS` or `FENPOS_EMPTY`.
 - **`isLightPieceType(int pceType)`:** Checks if a piece type is a light piece (bishop or knight).
 - **`pieceNameForType(int pceType)`:** Returns the name of a piece type.
 - **`pieceColorAndName(int pceType)`:** Returns the color and name of a piece type.
-- **`isPieceTypeWhite(int pceType)`:** Checks if a piece type is white.
-- **`isPieceTypeBlack(int pceType)`:** Checks if a piece type is black.
+- **`isPieceTypeWhite(int pceType)`:** Checks if a piece of this type is white.
+- **`isPieceTypeBlack(int pceType)`:** Checks if a piece of this type is black.
 - **`colorOfPieceType(int pceType)`:** Returns the color of a piece type.
 - **`colorIndexOfPieceType(int pceType)`:** Returns the color index of a piece type.
 - **`colorlessPieceType(int pceType)`:** Returns the piece type without its color.
