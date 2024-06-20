@@ -58,6 +58,9 @@ public class ChessBasics {
     public static boolean isWhite(int colIndex) {
         return colIndex==CIWHITE;
     }
+    public static boolean isBlack(int colIndex) {
+        return colIndex==CIBLACK;
+    }
     public static boolean colorFromColorIndex(int colIndex) {
         return colIndex==CIWHITE;
     }
@@ -184,6 +187,24 @@ public class ChessBasics {
         };
     }
 
+    public static int[] pieceDirections(int pceTypeNr) {
+        return switch (pceTypeNr) {
+            case KING ->        ROYAL_DIRS;
+            case QUEEN ->       ROYAL_DIRS;
+            case ROOK ->        HV_DIRS;
+            case BISHOP ->      DIAG_DIRS;
+            case KNIGHT ->      KNIGHT_DIRS;
+            case PAWN ->        WPAWN_ALL_DIRS;
+            case KING_BLACK ->  ROYAL_DIRS;
+            case QUEEN_BLACK -> ROYAL_DIRS;
+            case ROOK_BLACK ->  HV_DIRS;
+            case BISHOP_BLACK-> DIAG_DIRS;
+            case KNIGHT_BLACK-> KNIGHT_DIRS;
+            case PAWN_BLACK ->  BPAWN_ALL_DIRS;
+            default -> new int[]{};
+        };
+    }
+
     public static int singleLightPieceBaseValue(int pceTypeNr) {
         return switch (pceTypeNr) {
             case BISHOP ->       SINGLEBISHOP_BASEVALUE;
@@ -251,6 +272,37 @@ public class ChessBasics {
                 || (col==BLACK && eval<0)
                 || (col==WHITE && eval>0);
     }
+
+    /** evalIsOkForColByMin checks if a squares local evaluation (board perspective)
+     * is significantly close to zero (by min) or even good for its own color
+     * @param eval local squares result for my piece
+     * @param ci colorIndex of my piece
+     * @param min what I tolerate, even against my favour.
+     *            if min<0 then I must have at least -min benefit.
+     * @return boolean result if ok for my piece to go there (false should result in a nogo flag)
+     *  Be aware, if relEval is still NOT_EVALUATED this returns also true.
+     */
+    public static boolean evalIsOkForColByMin(final int eval, final int ci, final int min) {
+        if (eval==NOT_EVALUATED)
+            return true;
+        if (min>0)
+            return abs(eval)<min
+                    || (ci==CIBLACK && eval<0)
+                    || (ci==CIWHITE && eval>0);
+        return (ci==CIBLACK && eval<min)
+                || (ci==CIWHITE && eval>-min);
+    }
+
+    /**
+     * same as method with 3 params, with min set to EVAL_TENTH
+     */
+    public static boolean evalIsOkForColByMin(final int eval, final int ci) {
+        return eval==NOT_EVALUATED
+                || abs(eval)<EVAL_DELTAS_I_CARE_ABOUT
+                || (ci==CIBLACK && eval<0)
+                || (ci==CIWHITE && eval>0);
+    }
+
 
 
  /*   //public static final String[] FIGURE_NAMES = {"none", "König", "Dame", "Turm", "Läufer", "Springer", "Bauer", "eine Figure", "Turm der hinter einer Dame war", "Läufer der hinter einer Dame war"};
@@ -676,7 +728,15 @@ public class ChessBasics {
     public static String squareName(final int pos) {
         if (pos == ANYWHERE)
             return "**";
-        return (char) ((int) 'a' + fileOf(pos)) + String.valueOf((char) ((int) '1' + rankOf(pos)));
+        return "" + file2Char(pos) + rank2Char(pos);
+    }
+
+    public static char rank2Char(int pos) {
+        return (char) ((int) '1' + rankOf(pos));
+    }
+
+    public static char file2Char(int pos) {
+        return (char) ((int) 'a' + fileOf(pos));
     }
 
     /**
@@ -1008,7 +1068,7 @@ public class ChessBasics {
                               : max(eval1,eval2);
     }
 
-    static boolean formRightTriangle(int fromPos, int toPos1, int toPos2) {
+    public static boolean formRightTriangle(int fromPos, int toPos1, int toPos2) {
         return (fileOf(toPos1) == fileOf(toPos2)
                     && fileOf(fromPos) != fileOf(toPos1))
                 || (rankOf(toPos1) == rankOf(toPos2)
@@ -1024,4 +1084,5 @@ public class ChessBasics {
                     && isBishopDir(toPos1, toPos2))
                 ;
     }
+
 }
