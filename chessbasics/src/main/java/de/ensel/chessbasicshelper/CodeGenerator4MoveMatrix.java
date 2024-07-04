@@ -1,5 +1,7 @@
 package de.ensel.chessbasicshelper;
 
+import de.ensel.chessbasics.ChessBasics;
+
 import static de.ensel.chessbasics.ChessBasics.*;
 
 public class CodeGenerator4MoveMatrix {
@@ -9,7 +11,7 @@ public class CodeGenerator4MoveMatrix {
         System.out.println("(It is not intended to be instantiated or embedded in your program.)");
         System.out.println("You can let it run, to print Java int[][] matrices for the possible moves of each piece.");
         System.out.println("So, you can use the printed result as static code (base data) in your program.");
-        System.out.println("");
+        System.out.println();
         printPieceMoves(KING);
         printPieceMoves(QUEEN);
         printPieceMoves(ROOK);
@@ -40,7 +42,7 @@ public class CodeGenerator4MoveMatrix {
 
     public static void printPieceMoves(int pceType) {
         int[] directions = pieceDirections(pceType);
-        System.out.println("moveMatix4" + pieceVariableNameForType(pceType)+" = new int[][] { ");
+        System.out.println("int[][] moveMatrix4" + pieceVariableNameForType(pceType)+" = new int[][] { ");
         for (int pos=0; pos < NR_SQUARES; pos++) {
             if (isFirstFile(pos))
                 System.out.print("    /* rank " + rank2Char(pos) + ": */ ");
@@ -68,10 +70,12 @@ public class CodeGenerator4MoveMatrix {
         boolean komma = false;
 
         System.out.print("{");
-        for (Integer d : directions) {
+        for (int d : directions) {
             boolean dirComment = true;
             int p = startPos;
-            while (plusDirIsStillLegal(p, d)) {
+            boolean isAKnightDir = isKnightDir(d);
+            while ( isAKnightDir ? knightMoveInDirFromPosStaysOnBoard(d, p)
+                                 : plusDirIsStillLegal(p, d)) {
                 p += d;
                 if (komma)
                     System.out.print(",");

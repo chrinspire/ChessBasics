@@ -19,6 +19,7 @@
 package de.ensel.chessbasics;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -70,8 +71,11 @@ public class ChessBasics {
     public static boolean opponentColor(boolean col) {
         return !col;
     }
+    public static int opponentColor(int colIndex) {
+        return colIndex ^= 1;  // XOR flips colors between 0 and 1, do not use for ANY other value...
+    }
     public static int opponentColorIndex(int colIndex) {
-        return colIndex ^= 1;  // XOR
+        return colIndex ^= 1;  // XOR flips colors between 0 and 1, do not use for ANY other value...
     }
     public static final String colorNameWhite= chessBasicRes.getString("colorname_white");
     public static final String colorNameBlack= chessBasicRes.getString("colorname_black");
@@ -108,6 +112,17 @@ public class ChessBasics {
     public static int checkmateEval(boolean color) {
         return isWhite(color) ? WHITE_IS_CHECKMATE : BLACK_IS_CHECKMATE;
     }
+
+    public static int checkmateEvalIn(boolean color, int nrOfPlys) {
+        return isWhite(color) ? WHITE_IS_CHECKMATE + CHECK_IN_N_DELTA*nrOfPlys
+                              : BLACK_IS_CHECKMATE - CHECK_IN_N_DELTA*nrOfPlys;
+    }
+
+    public static int checkmateEvalIn(int colorIndex, int nrOfPlys) {
+        return isWhite(colorIndex) ? WHITE_IS_CHECKMATE + CHECK_IN_N_DELTA*nrOfPlys
+                : BLACK_IS_CHECKMATE - CHECK_IN_N_DELTA*nrOfPlys;
+    }
+
 
     public static boolean isCheckmateEvalFor(int eval, boolean color) {
         return isWhite(color) ?  eval < WHITE_IS_CHECKMATE + CHECK_IN_N_DELTA*20
@@ -494,6 +509,11 @@ public class ChessBasics {
     public static final int[] DIAG_DIRS = { UPLEFT, UPRIGHT, DOWNLEFT, DOWNRIGHT };
     public static final int[] NODIRS = {};
 
+    /** checks if dir is one of the exact directions of a rook, i.e. UP,...
+     * Note that only true "dir"s are resulting in true. A moving distance of more than one square is not a "dir"ection.
+     * @param dir the value to be tested if it is a value rook dir.
+     * @return true for true rook directions.
+     */
     public static boolean isRookDir(final int dir) {
         for (int d : HV_DIRS)
             if (dir == d)
@@ -501,6 +521,11 @@ public class ChessBasics {
         return false;
     }
 
+    /** checks if dir is one of the exact directions of a bishop, i.e. UPLEFT,...
+     * Note that only true "dir"s are resulting in true. A moving distance of more than one square is not a "dir"ection.
+     * @param dir the value to be tested if it is a value bishop dir.
+     * @return true for true bishop directions.
+     */
     public static boolean isBishopDir(final int dir) {
         for (int d : DIAG_DIRS)
             if (dir == d)
@@ -508,11 +533,25 @@ public class ChessBasics {
         return false;
     }
 
+    /** checks if moving from-to is possible for a bishop.
+     * Note that the naming of the method is imprecise: It does not only return true for real "dir"s (which have
+     * a distance of exactly one square), but for any valid bishop move (on an empty board).
+     * @param from starting position
+     * @param to target position
+     * @return true for possible bishop moves.
+     */
     public static boolean isBishopDir(final int from, final int to) {
         return from != to
                 && abs(fileOf(from)-fileOf(to)) == abs(rankOf(from)-rankOf(to));
     }
 
+    /** checks if moving from-to is possible for a rook.
+     * Note that the naming of the method is imprecise: It does not only return true for real "dir"s (which have
+     * a distance of exactly one square), but for any valid rook move (on an empty board).
+     * @param from starting position
+     * @param to target position
+     * @return true for possible rook moves.
+     */
     public static boolean isRookDir(final int from, final int to) {
         return from != to
                 && ( fileOf(from) == fileOf(to)
@@ -561,7 +600,7 @@ public class ChessBasics {
     public static final int KNIGHT_DIR_LELEDOWN = LEFT+DOWNLEFT;
     public static final int KNIGHT_DIR_REREUP = RIGHT+UPRIGHT;
     public static final int KNIGHT_DIR_REREDOWN = RIGHT+DOWNRIGHT;
-    public static final int[] KNIGHT_DIRS = { LEFT+UPLEFT, UP+UPLEFT, UP+UPRIGHT, RIGHT+UPRIGHT, LEFT+DOWNLEFT, RIGHT+DOWNRIGHT, DOWN+DOWNLEFT, DOWN+DOWNRIGHT };
+    public static final int[] KNIGHT_DIRS = { UP+UPLEFT, UP+UPRIGHT, LEFT+UPLEFT, RIGHT+UPRIGHT, LEFT+DOWNLEFT, RIGHT+DOWNRIGHT, DOWN+DOWNLEFT, DOWN+DOWNRIGHT };
 
     public static int[] getAllPawnDirs(boolean col, int fromRank) {
         if (isWhite(col)) {
@@ -728,6 +767,8 @@ public class ChessBasics {
     public static String squareName(final int pos) {
         if (pos == ANYWHERE)
             return "**";
+        if (pos == POS_UNSET)
+            return "__";
         return "" + file2Char(pos) + rank2Char(pos);
     }
 
@@ -861,6 +902,10 @@ public class ChessBasics {
                 || ( isLastFile(pos)  && ( dir==RIGHT || dir==UPRIGHT  || dir==DOWNRIGHT) )
                 || ( isFirstRank(pos) && ( dir==DOWN  || dir==DOWNLEFT || dir==DOWNRIGHT) )
                 || ( isLastRank(pos)  && ( dir==UP    || dir==UPLEFT   || dir==UPRIGHT  ) ) );
+    }
+
+    public static boolean isKnightDir(int dir) {
+        return Arrays.binarySearch(KNIGHT_DIRS, dir) >= 0;
     }
 
     public static boolean knightMoveInDirFromPosStaysOnBoard(int dir, int pos) {
